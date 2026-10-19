@@ -1,0 +1,21 @@
+{
+  "name": "TestiFlow",
+  "short_name": "TestiFlow",
+  "description": "Collect text and video testimonials in one link, filter out spam, and publish a Wall of Love you can embed on your site.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f5834a",
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
