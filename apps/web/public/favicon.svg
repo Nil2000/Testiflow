@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path fill="#f5834a" d="M32 4C18.2 4 8 14.4 8 27.6 8 40.2 32 60 32 60s24-19.8 24-32.4C56 14.4 45.8 4 32 4z"/>
+  <path fill="#fff" d="M32 12.2c-9.2 0-16.2 7-16.2 15.6 0 8.4 16.2 21.6 16.2 21.6s16.2-13.2 16.2-21.6c0-8.6-7-15.6-16.2-15.6z"/>
+  <text x="32" y="38" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-weight="700" fill="#1a1a1a">”</text>
+</svg>

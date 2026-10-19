@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/opengraph";
+import { SITE_NAME } from "@/lib/opengraph";
 
 export function GET() {
   return new ImageResponse(
@@ -18,7 +18,7 @@ export function GET() {
       >
         <div style={{ fontSize: 72 }}>{SITE_NAME}</div>
         <div style={{ fontSize: 32, marginTop: 24, color: "#cbd5e1" }}>
-          {SITE_DESCRIPTION}
+          Collect, manage, and showcase testimonials.
         </div>
       </div>
     ),
