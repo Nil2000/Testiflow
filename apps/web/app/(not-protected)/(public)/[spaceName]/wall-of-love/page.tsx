@@ -1,11 +1,33 @@
-import { getTestimonialsForWallOfLove } from "@/actions/spaceActions";
+import {
+  getTestimonialsForWallOfLove,
+  spaceExists,
+} from "@/actions/spaceActions";
+import { spacePageMetadata } from "@/lib/opengraph";
+import { TestimonialResponse } from "@/lib/types";
+import type { WallOfLoveSettings } from "@/lib/wall-of-love-settings";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import React from "react";
 import WallOfLovePage, {
   type WallOfLoveSpaceBranding,
 } from "./_components/_client";
-import { TestimonialResponse } from "@/lib/types";
-import type { WallOfLoveSettings } from "@/lib/wall-of-love-settings";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ spaceName: string }>;
+}): Promise<Metadata> {
+  const { spaceName } = await params;
+  const space = await spaceExists(spaceName);
+  if (!space) return {};
+
+  return spacePageMetadata({
+    title: "Wall of Love",
+    description: space.headerTitle,
+    path: `/${space.name}/wall-of-love`,
+    image: space.logo,
+  });
+}
 
 export default async function page({
   params,

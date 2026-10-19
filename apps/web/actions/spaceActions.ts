@@ -1,4 +1,5 @@
 "use server";
+import { cache } from "react";
 import { db } from "@repo/db";
 import { spaceSchema, thankyouSchema } from "@/schemas/spaceSchema";
 import { wallOfLoveSchema } from "@/schemas/wallOfLoveSchema";
@@ -255,7 +256,7 @@ export const changeSpaceStatus = async (id: string, status: boolean) => {
   }
 };
 
-export const spaceExists = async (spaceName: string) => {
+export const spaceExists = cache(async (spaceName: string) => {
   if (isReservedSpaceSegment(spaceName)) {
     return null;
   }
@@ -278,7 +279,7 @@ export const spaceExists = async (spaceName: string) => {
     console.error(error);
     return null;
   }
-};
+});
 
 export const getTestimonialsForWallOfLove = async (spaceName: string) => {
   if (isReservedSpaceSegment(spaceName)) {
