@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono, DM_Serif_Text, Poppins } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "./provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ThemeToaster } from "@/components/theme-toaster";
 import { Analytics } from "@vercel/analytics/next";
+import { siteMetadata } from "@/lib/opengraph";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,10 +27,7 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
-export const metadata: Metadata = {
-  title: "TestiFlow",
-  description: "Collect, manage, and showcase testimonials with TestiFlow.",
-};
+export const metadata = siteMetadata;
 
 export default function RootLayout({
   children,

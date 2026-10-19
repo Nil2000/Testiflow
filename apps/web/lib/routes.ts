@@ -45,6 +45,7 @@ export const reservedPathSegments = new Set([
   "not-found",
   "404",
   "_next",
+  "og",
 ]);
 
 export function isAuthRoute(pathname: string): boolean {
