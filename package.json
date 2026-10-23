@@ -2,7 +2,7 @@
   "name": "testiflow",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env -- turbo run dev --concurrency 2",
+    "dev": "dotenv -e .env -- turbo run dev --concurrency 3",
     "build": "dotenv -e .env -- turbo run build",
     "vercel:build": "turbo run vercel:build --filter=web",
     "lint": "turbo run lint",

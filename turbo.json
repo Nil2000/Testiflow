@@ -28,5 +28,6 @@
     "typecheck": {
       "dependsOn": ["^db:generate", "db:generate"]
     }
-  }
+  },
+  "ui": "tui"
 }
