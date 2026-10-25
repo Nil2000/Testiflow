@@ -1,7 +1,6 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
-import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import AppLogo from "./app-logo";
 import Link from "next/link";
@@ -12,6 +11,19 @@ import ThemeToggle from "./theme-toggle";
 type Props = {
   session: Session | null;
 };
+
+function useMinSm() {
+  const [minSm, setMinSm] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 640px)");
+    const update = () => setMinSm(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  return minSm;
+}
+
 export default function LandingPageNavbarV2({ session }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll({
@@ -19,6 +31,7 @@ export default function LandingPageNavbarV2({ session }: Props) {
     offset: ["start start", "end start"],
   });
   const [visible, setVisible] = useState<boolean>(false);
+  const minSm = useMinSm();
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (latest > 100) {
       // 100px from top
@@ -35,14 +48,18 @@ export default function LandingPageNavbarV2({ session }: Props) {
   return (
     <motion.div
       ref={ref}
-      className={cn(
-        "fixed inset-x-0 top-0 z-40 mx-auto flex h-16 items-center justify-between px-4 font-poppins sm:px-6",
-        visible && "border border-border bg-background/70",
-      )}
+      className="fixed inset-x-0 top-0 z-40 mx-auto flex h-16 w-full items-center justify-between border border-transparent px-4 font-poppins sm:px-6"
+      initial={false}
       animate={{
         y: visible ? "1rem" : 0,
-        width: visible ? "80%" : "100%",
+        // Percentage max-width interpolates. 96% on small screens keeps the
+        // logo and button from colliding; 80% reads as a pill on desktop.
+        maxWidth: visible ? (minSm ? "80%" : "96%") : "100%",
         borderRadius: visible ? "4rem" : "0rem",
+        backgroundColor: visible
+          ? "hsl(var(--background) / 0.7)"
+          : "hsl(var(--background) / 0)",
+        borderColor: visible ? "hsl(var(--border))" : "transparent",
         backdropFilter: visible ? "blur(12px)" : "blur(0px)",
         boxShadow: visible
           ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
