@@ -12,6 +12,7 @@
     "typescript-eslint": "^8.19.0"
   },
   "scripts": {
+    "dev": "dotenv -e ../../.env -- bun run src/index.ts",
     "start": "dotenv -e ../../.env -- bun run src/index.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
