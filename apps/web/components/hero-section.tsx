@@ -199,7 +199,7 @@ export default function HeroSection({ loggedIn }: { loggedIn: boolean }) {
   };
 
   return (
-    <section className="mx-auto grid w-full max-w-6xl items-start gap-12 px-4 pb-20 pt-28 lg:grid-cols-2 lg:gap-16 lg:pt-36">
+    <section className="mx-auto grid min-h-svh w-full max-w-6xl content-center items-start gap-12 px-4 pb-20 pt-28 lg:grid-cols-2 lg:gap-16 lg:pt-36">
       <div>
         <p
           className={cn(
