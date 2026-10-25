@@ -53,12 +53,13 @@ export default function LandingPricing({ loggedIn }: { loggedIn: boolean }) {
             const price = PLAN_PRICES[plan];
 
             return (
-              <Reveal
-                key={plan}
-                delay={index * 0.1}
-                highlight={popular}
+              <Reveal key={plan} delay={index * 0.1} className="h-full">
+              <article
                 className={cn(
-                  "flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-[transform,border-color] duration-700 hover:-translate-y-0.5 hover:border-primary/60 motion-reduce:hover:translate-y-0",
+                  "flex h-full flex-col rounded-xl border bg-card p-5 transition-[transform,border-color] duration-300 ease-out hover:-translate-y-0.5 motion-reduce:hover:translate-y-0",
+                  popular
+                    ? "border-primary"
+                    : "border-border hover:border-primary/60",
                 )}
               >
                 <div className="flex items-baseline justify-between gap-3">
@@ -100,6 +101,7 @@ export default function LandingPricing({ loggedIn }: { loggedIn: boolean }) {
                 >
                   <Link href={action.href}>{action.label}</Link>
                 </Button>
+              </article>
               </Reveal>
             );
           })}

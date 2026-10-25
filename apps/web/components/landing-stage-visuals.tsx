@@ -1,24 +1,18 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { Quote, Star } from "lucide-react";
+import { enterMotion, useMotionReduced } from "./reveal";
 
-const ease = [0.2, 0.8, 0.2, 1] as const;
-
-function usePlay<T extends HTMLElement>() {
-  const ref = useRef<T>(null);
-  const inView = useInView(ref, { once: true, margin: "-40px" });
-  const reduce = useReducedMotion() === true;
-  return { ref, play: inView && !reduce };
-}
+// Starts after the card reveal so the two entrances don't fire together.
+const visualDelay = 0.25;
+const stagger = 0.08;
 
 export function CollectVisual() {
-  const { ref, play } = usePlay<HTMLDivElement>();
+  const reduce = useMotionReduced();
 
   return (
     <div
-      ref={ref}
       className="rounded-lg border border-border bg-background p-3"
       aria-hidden="true"
     >
@@ -31,17 +25,10 @@ export function CollectVisual() {
           <motion.span
             key={i}
             className="inline-flex"
-            initial={false}
-            animate={play ? "show" : "rest"}
-            variants={{
-              rest: { opacity: 1, scale: 1 },
-              show: { opacity: [0.2, 1], scale: [0.7, 1] },
-            }}
-            transition={{
-              duration: play ? 0.35 : 0,
-              delay: play ? i * 0.08 : 0,
-              ease,
-            }}
+            {...enterMotion(reduce, visualDelay + i * stagger, {
+              scale: 0.9,
+              opacity: 0,
+            })}
           >
             <Star className="h-3.5 w-3.5 fill-primary text-primary" />
           </motion.span>
@@ -69,25 +56,15 @@ const manageRows = [
 ];
 
 export function ManageVisual() {
-  const { ref, play } = usePlay<HTMLUListElement>();
+  const reduce = useMotionReduced();
 
   return (
-    <ul ref={ref} className="space-y-2" aria-hidden="true">
+    <ul className="space-y-2" aria-hidden="true">
       {manageRows.map((row, i) => (
         <motion.li
           key={row.tag}
           className="flex items-center justify-between rounded-lg border border-border bg-background px-3 py-2 text-xs"
-          initial={false}
-          animate={play ? "show" : "rest"}
-          variants={{
-            rest: { opacity: 1, x: 0 },
-            show: { opacity: [0, 1], x: [14, 0] },
-          }}
-          transition={{
-            duration: play ? 0.45 : 0,
-            delay: play ? i * 0.1 : 0,
-            ease,
-          }}
+          {...enterMotion(reduce, visualDelay + i * stagger)}
         >
           <span className="text-muted-foreground">{row.label}</span>
           <span className={`rounded-md px-1.5 py-0.5 font-medium ${row.tone}`}>
@@ -107,25 +84,15 @@ const quotes = [
 ];
 
 export function ShowcaseVisual() {
-  const { ref, play } = usePlay<HTMLDivElement>();
+  const reduce = useMotionReduced();
 
   return (
-    <div ref={ref} className="grid grid-cols-2 gap-2" aria-hidden="true">
+    <div className="grid grid-cols-2 gap-2" aria-hidden="true">
       {quotes.map((line, i) => (
         <motion.div
           key={line}
           className="rounded-lg border border-border bg-background p-2"
-          initial={false}
-          animate={play ? "show" : "rest"}
-          variants={{
-            rest: { opacity: 1, y: 0 },
-            show: { opacity: [0, 1], y: [8, 0] },
-          }}
-          transition={{
-            duration: play ? 0.4 : 0,
-            delay: play ? i * 0.08 : 0,
-            ease,
-          }}
+          {...enterMotion(reduce, visualDelay + i * stagger)}
         >
           <Quote className="h-3 w-3 text-primary" />
           <p className="mt-1.5 text-[11px] leading-snug text-foreground/80">

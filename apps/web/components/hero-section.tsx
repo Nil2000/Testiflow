@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { LayoutGroup, motion, useReducedMotion } from "motion/react";
+import { LayoutGroup, motion } from "motion/react";
+import { useMotionReduced } from "./reveal";
 import { ArrowRight, Star, Video } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -16,6 +17,9 @@ const HEADLINE = [
   "Keep the good ones.",
   "Put them to work.",
 ];
+
+// CSS, not motion: a JS opacity of 0 hides the headline until hydration.
+const enter = "motion-safe:animate-wol-enter motion-reduce:animate-none";
 
 type ReviewItem = {
   id: string;
@@ -54,22 +58,6 @@ const REVIEWS: ReviewItem[] = [
   },
 ];
 
-function rise(play: boolean, delay: number) {
-  return {
-    initial: false as const,
-    animate: play ? ("show" as const) : ("rest" as const),
-    variants: {
-      rest: { opacity: 1, y: 0 },
-      show: { opacity: [0, 1], y: [14, 0] },
-    },
-    transition: {
-      duration: play ? 0.55 : 0,
-      delay: play ? delay : 0,
-      ease,
-    },
-  };
-}
-
 function Stars({ count }: { count: number }) {
   return (
     <span className="flex" aria-label={`${count} out of 5 stars`}>
@@ -88,16 +76,16 @@ function Stars({ count }: { count: number }) {
   );
 }
 
-function TypedLink({ play }: { play: boolean }) {
-  const reduce = useReducedMotion() === true;
-  const [count, setCount] = useState(reduce ? COLLECTION_LINK.length : 0);
+function TypedLink() {
+  const reduce = useMotionReduced();
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (reduce || !play || count >= COLLECTION_LINK.length) return;
+    if (reduce || count >= COLLECTION_LINK.length) return;
     const delay = count === 0 ? 520 : 26;
     const timer = setTimeout(() => setCount((current) => current + 1), delay);
     return () => clearTimeout(timer);
-  }, [play, count, reduce]);
+  }, [count, reduce]);
 
   const shown = reduce ? COLLECTION_LINK : COLLECTION_LINK.slice(0, count);
 
@@ -121,47 +109,24 @@ function ReviewCard({
   onWall,
   onToggle,
   reduceMotion,
-  intro,
   pulse,
-  order,
 }: {
   item: ReviewItem;
   onWall: boolean;
   onToggle: (on: boolean) => void;
   reduceMotion: boolean;
-  intro: boolean;
   pulse: boolean;
-  order: number;
 }) {
   const isSpam = item.sentiment === "spam";
-  const enter = intro && !reduceMotion;
 
   return (
     <motion.article
       layout={!reduceMotion}
       layoutId={item.id}
-      initial={false}
-      animate={enter ? "show" : "rest"}
-      variants={{
-        rest: { opacity: 1, y: 0 },
-        show: { opacity: [0, 1], y: [12, 0] },
-      }}
       transition={
         reduceMotion
           ? { duration: 0 }
-          : {
-              layout: { type: "spring", bounce: 0.16, duration: 0.45 },
-              opacity: {
-                duration: enter ? 0.45 : 0,
-                delay: enter ? 0.62 + order * 0.08 : 0,
-                ease,
-              },
-              y: {
-                duration: enter ? 0.45 : 0,
-                delay: enter ? 0.62 + order * 0.08 : 0,
-                ease,
-              },
-            }
+          : { layout: { type: "spring", bounce: 0.16, duration: 0.45 } }
       }
       className="rounded-lg border border-border bg-background p-3"
     >
@@ -215,22 +180,11 @@ function ReviewCard({
 }
 
 export default function HeroSection({ loggedIn }: { loggedIn: boolean }) {
-  const reduceMotion = useReducedMotion() === true;
-  const [play, setPlay] = useState(false);
-  const [intro, setIntro] = useState(true);
+  const reduceMotion = useMotionReduced();
   const [hint, setHint] = useState(true);
   const [onWall, setOnWall] = useState<Record<string, boolean>>({
     lena: true,
   });
-
-  useEffect(() => {
-    const start = requestAnimationFrame(() => setPlay(true));
-    const timer = setTimeout(() => setIntro(false), 1400);
-    return () => {
-      cancelAnimationFrame(start);
-      clearTimeout(timer);
-    };
-  }, []);
 
   const inbox = REVIEWS.filter(
     (item) => item.sentiment === "spam" || !onWall[item.id],
@@ -245,35 +199,40 @@ export default function HeroSection({ loggedIn }: { loggedIn: boolean }) {
   };
 
   return (
-    <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pb-20 pt-28 lg:grid-cols-2 lg:gap-16 lg:pt-36">
+    <section className="mx-auto grid w-full max-w-6xl items-start gap-12 px-4 pb-20 pt-28 lg:grid-cols-2 lg:gap-16 lg:pt-36">
       <div>
-        <motion.p
-          className="font-geist_mono text-xs uppercase tracking-[0.18em] text-secondary"
-          {...rise(play && !reduceMotion, 0)}
+        <p
+          className={cn(
+            enter,
+            "font-geist_mono text-xs uppercase tracking-[0.18em] text-secondary",
+          )}
         >
           Testimonial management
-        </motion.p>
+        </p>
         <h1 className="mt-4 max-w-xl font-display text-4xl leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
           {HEADLINE.map((line, index) => (
-            <motion.span
+            <span
               key={line}
-              className="block"
-              {...rise(play && !reduceMotion, 0.07 + index * 0.07)}
+              className={cn(enter, "block")}
+              style={{ animationDelay: `${80 + index * 80}ms` }}
             >
               {line}
-            </motion.span>
+            </span>
           ))}
         </h1>
-        <motion.p
-          className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg"
-          {...rise(play && !reduceMotion, 0.32)}
+        <p
+          className={cn(
+            enter,
+            "mt-5 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg",
+          )}
+          style={{ animationDelay: "340ms" }}
         >
           Send one link for text and video. Review what comes in, then publish
           a Wall of Love or embed a single testimonial on your site.
-        </motion.p>
-        <motion.div
-          className="mt-8 flex flex-col gap-3 sm:flex-row"
-          {...rise(play && !reduceMotion, 0.4)}
+        </p>
+        <div
+          className={cn(enter, "mt-8 flex flex-col gap-3 sm:flex-row")}
+          style={{ animationDelay: "420ms" }}
         >
           <Button asChild size="lg" className="group h-12 rounded-full px-7">
             <Link href={loggedIn ? "/dashboard" : "/api/auth/signin"}>
@@ -294,16 +253,19 @@ export default function HeroSection({ loggedIn }: { loggedIn: boolean }) {
           >
             <a href="#features">See how it works</a>
           </Button>
-        </motion.div>
-        <TypedLink play={play && !reduceMotion} />
+        </div>
+        <TypedLink />
       </div>
 
       <LayoutGroup>
-        <motion.div
-          className="rounded-xl border border-border bg-card p-4 sm:p-5"
+        <div
+          className={cn(
+            enter,
+            "rounded-xl border border-border bg-card p-4 sm:p-5",
+          )}
+          style={{ animationDelay: "500ms" }}
           role="group"
           aria-label="Example review inbox"
-          {...rise(play && !reduceMotion, 0.5)}
         >
           <p className="font-geist_mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
             Example inbox
@@ -315,9 +277,7 @@ export default function HeroSection({ loggedIn }: { loggedIn: boolean }) {
                 item={item}
                 onWall={false}
                 reduceMotion={reduceMotion}
-                intro={intro}
                 pulse={hint && !reduceMotion && item.id === "omar"}
-                order={REVIEWS.findIndex((review) => review.id === item.id)}
                 onToggle={(on) => publish(item.id, on)}
               />
             ))}
@@ -344,16 +304,14 @@ export default function HeroSection({ loggedIn }: { loggedIn: boolean }) {
                     item={item}
                     onWall
                     reduceMotion={reduceMotion}
-                    intro={intro}
                     pulse={false}
-                    order={REVIEWS.findIndex((review) => review.id === item.id)}
                     onToggle={(on) => publish(item.id, on)}
                   />
                 ))}
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       </LayoutGroup>
     </section>
   );
